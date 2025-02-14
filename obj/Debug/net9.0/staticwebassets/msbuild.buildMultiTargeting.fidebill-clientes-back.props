@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\fidebill-clientes-back.props" />
+</Project>

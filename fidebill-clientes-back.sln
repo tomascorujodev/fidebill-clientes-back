@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fidebill-clientes-back", "fidebill-clientes-back.csproj", "{98798D3A-5783-E45F-D720-804402FFAD7C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98798D3A-5783-E45F-D720-804402FFAD7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98798D3A-5783-E45F-D720-804402FFAD7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98798D3A-5783-E45F-D720-804402FFAD7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98798D3A-5783-E45F-D720-804402FFAD7C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EC5E6CC1-11BD-469E-AAA2-EF5936E6F7A0}
+	EndGlobalSection
+EndGlobal
