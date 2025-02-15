@@ -1,6 +1,6 @@
 @fidebill_clientes_back_HostAddress = http://localhost:5019
 
-GET {{fidebill_clientes_back_HostAddress}}/weatherforecast/
+GET {{fidebill_clientes_back_HostAddress}}
 Accept: application/json
 
 ###

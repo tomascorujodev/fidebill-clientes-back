@@ -8,7 +8,9 @@ public class UserLogedModel
     public required string Email { get; set; }
     public string? Direccion { get; set; }
     public string? Telefono { get; set; }
+    public DateTime FechaNacimiento { get; set; }
     public int Puntos { get; set; }
-    public string? Password { get; set; }
+    public string? Clave { get; set; }
+    public int? IdEmpresa { get; set; }
 
 }

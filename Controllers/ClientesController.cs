@@ -8,18 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fidebill_clientes_back.Controllers;
 
 [Authorize]
-[Route("clientes")]
+[Route("vistaclientes")]
 public class ClientesController(Repository repository) : ControllerBase
 {
     [HttpGet("obtenerlocales")]
-    public async Task<IActionResult> ObteneLocales()
+    public async Task<IActionResult> ObtenerLocales()
     {
         string idEmpresa = User.FindFirst("idEmpresa").Value;
         DynamicParameters dynamicParameters = new();
         dynamicParameters.Add("@id_empresa", idEmpresa);
         try
         {
-            BranchModel sucursales = await repository.GetOneByProcedure<BranchModel>("obtener_locales", dynamicParameters);
+            List<BranchModel> sucursales = await repository.GetListByProcedure<BranchModel>("obtener_locales", dynamicParameters);
             if (sucursales == null)
             {
                 return NoContent();

@@ -9,7 +9,7 @@ using Fidebill_clientes_back.Utils;
 namespace Fidebill_clientes_back.Controllers;
 
 [ApiController]
-[Route("Auth")]
+[Route("Authclientes")]
 public class AuthController(IConfiguration configuration, Repository repository) : ControllerBase
 {
   private readonly Jwt jwt = new(configuration);
@@ -21,15 +21,14 @@ public class AuthController(IConfiguration configuration, Repository repository)
     try
     {
       DynamicParameters dynamicParameters = new();
-      dynamicParameters.Add("@username", model.Username);
+      dynamicParameters.Add("@documento", model.Documento);
       dynamicParameters.Add("@id_empresa", model.IdEmpresa);
       UserLogedModel? result = await repository.GetOneByProcedure<UserLogedModel>("validar_usuario_cliente", dynamicParameters);
-      if (result == null)
+      if(result == null)
       {
         return Unauthorized(new { error = true, message = "El usuario y contraseña son incorrectos" });
       }
-      if (BCrypt.Net.BCrypt.Verify(model.Password, result.Password))
-      {
+      if((result.Clave == null && model.Password == model.Documento.ToString()) || (!string.IsNullOrEmpty(result.Clave) && BCrypt.Net.BCrypt.Verify(model.Password, result.Clave))){
         JwtSecurityToken claims = jwt.GenerateAccessToken(result);
         string token = new JwtSecurityTokenHandler().WriteToken(claims);
         return Ok(new { error = false, token });
@@ -114,6 +113,30 @@ public class AuthController(IConfiguration configuration, Repository repository)
     {
       Console.WriteLine(ex.Message);
       return StatusCode(500, new { error = true, message = "No se pudo hacer el ingreso. Por favor, contacte con un administrador." });
+    }
+  }
+
+  [HttpGet("checkempresa")]
+  public async Task<IActionResult> CheckEmpresa([FromQuery]string empresa)
+  {
+    try
+    {
+      DynamicParameters dynamicParameters = new();
+      dynamicParameters.Add("@empresa", empresa);
+      CheckCompanyModel? result = await repository.GetOneByProcedure<CheckCompanyModel?>("check_empresa", dynamicParameters);
+      if (result != null)
+      {
+        return Ok(new { error = false, response = result });
+      }
+      else
+      {
+        return NotFound( new { error = true, Message = "La empresa no existe" });
+      }
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine(ex.Message);
+      return StatusCode(500, new { error = true, message = "Ocurrio un problema al intentar cargar la pagina" });
     }
   }
 
