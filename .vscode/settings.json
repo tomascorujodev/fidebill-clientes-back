@@ -18,5 +18,7 @@
         "titleBar.inactiveBackground": "#709cad99",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#709cad"
+    "peacock.color": "#709cad",
+    "appService.defaultWebAppToDeploy": "/subscriptions/3b6c14f0-97a3-451e-ae13-eddf431ad48b/resourceGroups/sd-fidebill/providers/Microsoft.Web/sites/fidebill-clientes-back",
+    "appService.deploySubpath": "bin"
 }
