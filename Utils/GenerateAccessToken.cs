@@ -22,6 +22,7 @@ public class Jwt(IConfiguration configuration)
           new("fechaNacimiento", userLogedModel.Telefono ?? ""),
           new("puntos", userLogedModel.Puntos.ToString()),
           new("idEmpresa", userLogedModel.IdEmpresa.ToString()),
+          new("empresa", userLogedModel.UrlClientes),
       };
 
     var token = new JwtSecurityToken(

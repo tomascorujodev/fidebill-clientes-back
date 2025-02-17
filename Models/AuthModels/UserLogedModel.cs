@@ -12,5 +12,6 @@ public class UserLogedModel
     public int Puntos { get; set; }
     public string? Clave { get; set; }
     public int? IdEmpresa { get; set; }
+    public required string UrlClientes { get; set; }
 
 }
