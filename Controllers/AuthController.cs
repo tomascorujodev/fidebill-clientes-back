@@ -140,6 +140,33 @@ public class AuthController(IConfiguration configuration, Repository repository)
     }
   }
 
+  [HttpGet("cambiarclave")]
+  [Authorize]
+  public async Task<IActionResult> CambiarClave(string clave)
+  {
+    try
+    {
+      string idEmpresa = User.FindFirst("idEmpresa").Value;
+      DynamicParameters dynamicParameters = new();
+      dynamicParameters.Add("@id_empresa", idEmpresa);
+      dynamicParameters.Add("@clave", clave);
+      CheckCompanyModel? result = await repository.GetOneByProcedure<CheckCompanyModel?>("cambiar_clave", dynamicParameters);
+      if (result != null)
+      {
+        return Ok(new { error = false, response = result });
+      }
+      else
+      {
+        return NotFound( new { error = true, Message = "La empresa no existe" });
+      }
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine(ex.Message);
+      return StatusCode(500, new { error = true, message = "Ocurrio un problema al intentar cargar la pagina" });
+    }
+  }
+
   [HttpGet("validatetoken")]
   [Authorize]
   public async Task<IActionResult> ValidateToken()
