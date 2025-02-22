@@ -8,4 +8,5 @@ public class TransaccionesModel
     public required int Monto { get; set; }
     public decimal Puntos { get; set; }
     public required bool Estado { get; set; }
+    public required string DireccionLocal { get; set; }
 }

@@ -13,7 +13,6 @@ namespace Fidebill_clientes_back.Controllers;
 public class AuthController(IConfiguration configuration, Repository repository) : ControllerBase
 {
   private readonly Jwt jwt = new(configuration);
-  private readonly IConfiguration _configuration = configuration;
 
   [HttpPost("Login")]
   public async Task<IActionResult> Login(LogInModel model)
@@ -24,11 +23,12 @@ public class AuthController(IConfiguration configuration, Repository repository)
       dynamicParameters.Add("@documento", model.Documento);
       dynamicParameters.Add("@id_empresa", model.IdEmpresa);
       UserLogedModel? result = await repository.GetOneByProcedure<UserLogedModel>("validar_usuario_cliente", dynamicParameters);
-      if(result == null)
+      if (result == null)
       {
         return Unauthorized(new { error = true, message = "El usuario y contraseña son incorrectos" });
       }
-      if((result.Clave == null && model.Password == model.Documento.ToString()) || (!string.IsNullOrEmpty(result.Clave) && BCrypt.Net.BCrypt.Verify(model.Password, result.Clave))){
+      if ((result.Clave == null && model.Password == model.Documento.ToString()) || (!string.IsNullOrEmpty(result.Clave) && BCrypt.Net.BCrypt.Verify(model.Password, result.Clave)))
+      {
         JwtSecurityToken claims = jwt.GenerateAccessToken(result);
         string token = new JwtSecurityTokenHandler().WriteToken(claims);
         return Ok(new { error = false, token });
@@ -70,7 +70,7 @@ public class AuthController(IConfiguration configuration, Repository repository)
           return StatusCode(500, new { error = true, Message = "Ha ocurrido un error, por favor, contacte con un administrador" });
         }
       }
-      string hashedPassword = BCrypt.Net.BCrypt.HashPassword(cliente.Password, BCrypt.Net.BCrypt.GenerateSalt(12));
+      string hashedPassword = BCrypt.Net.BCrypt.HashPassword(cliente.Password, BCrypt.Net.BCrypt.GenerateSalt(10));
 
       IEnumerable<string> palabras = cliente.Nombre.Split([' '], StringSplitOptions.RemoveEmptyEntries)
                         .Select(p => char.ToUpper(p[0]) + p[1..].ToLower());
@@ -117,7 +117,7 @@ public class AuthController(IConfiguration configuration, Repository repository)
   }
 
   [HttpGet("checkempresa")]
-  public async Task<IActionResult> CheckEmpresa([FromQuery]string empresa)
+  public async Task<IActionResult> CheckEmpresa([FromQuery] string empresa)
   {
     try
     {
@@ -130,7 +130,7 @@ public class AuthController(IConfiguration configuration, Repository repository)
       }
       else
       {
-        return NotFound( new { error = true, Message = "La empresa no existe" });
+        return NotFound(new { error = true, Message = "La empresa no existe" });
       }
     }
     catch (Exception ex)
@@ -140,24 +140,30 @@ public class AuthController(IConfiguration configuration, Repository repository)
     }
   }
 
-  [HttpGet("cambiarclave")]
+  [HttpPatch("cambiarclave")]
   [Authorize]
-  public async Task<IActionResult> CambiarClave(string clave)
+  public async Task<IActionResult> CambiarClave([FromBody]string? clave)
   {
     try
     {
-      string idEmpresa = User.FindFirst("idEmpresa").Value;
-      DynamicParameters dynamicParameters = new();
-      dynamicParameters.Add("@id_empresa", idEmpresa);
-      dynamicParameters.Add("@clave", clave);
-      CheckCompanyModel? result = await repository.GetOneByProcedure<CheckCompanyModel?>("cambiar_clave", dynamicParameters);
-      if (result != null)
+
+      if (string.IsNullOrWhiteSpace(clave) || clave.Length < 8)
       {
-        return Ok(new { error = false, response = result });
+        return BadRequest(new { error = true, message = "La contraseña debe tener al menos 8 caracteres." });
       }
+      string idCliente = User.FindFirst("idCliente").Value;
+      string hashedPassword = BCrypt.Net.BCrypt.HashPassword(clave, BCrypt.Net.BCrypt.GenerateSalt(10));
+      DynamicParameters dynamicParameters = new();
+      dynamicParameters.Add("@id_cliente", idCliente);
+      dynamicParameters.Add("@clave", hashedPassword);
+      int affectedRows = await repository.InsertByProcedure("cambiar_clave", dynamicParameters);
+      if (affectedRows > 0)
+      {
+        return Ok(new { error = false });
+      } 
       else
       {
-        return NotFound( new { error = true, Message = "La empresa no existe" });
+        return NotFound(new { error = true, Message = "El cambio de contraseña no se pudo llevar a cabo, verifique su usuario o contacte con un administrador." });
       }
     }
     catch (Exception ex)

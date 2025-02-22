@@ -50,7 +50,6 @@ public class ClientesController(Repository repository) : ControllerBase
         {
             Console.WriteLine(ex.Message);
             return StatusCode(500, new { error = true, Message = "No se pudo obtener las operaciones, por favor, contacte un administrador" });
-
         }
     }
 }
