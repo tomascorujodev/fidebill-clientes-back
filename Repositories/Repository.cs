@@ -10,7 +10,7 @@ public class Repository
 
     public Repository(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("LocalConnectionString");
+        _connectionString = configuration.GetConnectionString("AzureConnectionString");
     }
 
     public async Task<int> DeleteAsync(string query)
