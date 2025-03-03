@@ -22,31 +22,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = configuration["JwtSettings:Issuer"],
             ValidAudience = configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("La clave secreta JWT no está configurada."))),
+            ClockSkew = TimeSpan.Zero
         };
     });
 
-builder.Services.AddCors(options => 
+
+builder.Services.AddCors(options =>
     {
-        options.AddDefaultPolicy(policy => {
+        options.AddDefaultPolicy(policy =>
+        {
             policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
         });
     }
 );
+
 builder.Services.AddScoped<Repository>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
-        {
-            options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
-                                       Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
-        });
+    {
+        options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor |
+                                    Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    });
 
 var app = builder.Build();
-app.UseStaticFiles();
+
 app.UseHttpsRedirection();
+app.UseCors();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors();
 app.Run();
