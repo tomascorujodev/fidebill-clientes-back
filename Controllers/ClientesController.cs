@@ -109,5 +109,4 @@ public class ClientesController(Repository repository) : ControllerBase
             return StatusCode(500, new { error = true, Message = "No se pudo obtener las operaciones, por favor, contacte un administrador" });
         }
     }
-
 }
